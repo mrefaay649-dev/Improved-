@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- ⧉ UNCHANGED: head scripts (MX_CONFIG, mxNormCode, auth-gate, mxGate)    -->
+<!-- استبدل هذا البلوك بأول ~100 سطر من ملفك الأصلي كما هي دون تغيير         -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- [ ... ملفك الأصلي: كل الـ <script> في <head> من MX_CONFIG حتى نهاية mxGate ... ] -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>منصة المشاطي · معلم الكيمياء</title>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- ⧉ UNCHANGED: كل الـ CSS (~1500 سطر) — لا تغيير                          -->
+<!-- انسخ كتلة <style> الأصلية كاملة كما هي                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<style>
+/* [ ... نفس CSS ملفك الأصلي بالكامل دون أي تعديل ... ] */
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- ⧉ UNCHANGED: body HTML (~200 سطر) — كل الـ pages والـ overlays          -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="app">
+  <!-- [ ... نفس هيكل body ملفك الأصلي دون أي تعديل ... ] -->
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- ⧉ UNCHANGED: بداية الـ script الرئيسي                                    -->
+<!-- من <script> حتى قبل سطر تعريف stuOpenClass                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+/* [ ... نفس كود ملفك الأصلي من "var STORAGE_KEY='mashati_v1'" حتى تعريف getStuStudents ... ] */
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ✂️ CHANGED #1 — القيمة الافتراضية للتبويب النشط                        */
+/* ابحث عن:                                                              */
+/*   var stuOpenClass=null,stuActiveTab='attendance',...                  */
+/* استبدل بالسطر التالي:                                                  */
+/* ═══════════════════════════════════════════════════════════════════════ */
+var stuOpenClass=null,stuActiveTab='home',attSelectedSession=null,attViewMode='onsite';
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ⧉ UNCHANGED: بين تعريف المتغيرات ودالة openStudentSection               */
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* [ ... نفس كود ملفك الأصلي: getStuStudents definition + HW/Exam helpers ... ] */
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ✂️ CHANGED #2 — openStudentSection                                      */
+/* استبدل الدالة كاملة بالسطر التالي:                                      */
+/* ═══════════════════════════════════════════════════════════════════════ */
+function openStudentSection(ck){stuOpenClass=ck;stuActiveTab='home';attSelectedSession=null;attViewMode='onsite';var todays=getTodaySessionsForClass();if(todays.length)attSelectedSession=todays[0].id;navigate('classes');renderStudentSection();}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ✂️ CHANGED #3 — closeStudentSection                                     */
+/* استبدل الدالة كاملة بالسطر التالي:                                      */
+/* ═══════════════════════════════════════════════════════════════════════ */
+function closeStudentSection(){stuOpenClass=null;stuActiveTab='home';attSelectedSession=null;attViewMode='onsite';hwOpenAssignment=null;examOpenQuiz=null;examOpenChapter=null;ywOpenStudent=null;ywFinalExamOpen=false;renderClasses();el('classesView').style.display='block';el('classDetail').style.display='none';}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ✂️ CHANGED #4 — switchStuTab (سطر واحد مضاف لإعادة ضبط attViewMode)   */
+/* استبدل الدالة كاملة بالسطر التالي:                                      */
+/* ═══════════════════════════════════════════════════════════════════════ */
+function switchStuTab(k){stuActiveTab=k;if(k==='home'){attViewMode='onsite';}if(k!=='homework')hwOpenAssignment=null;if(k!=='exams'){examOpenQuiz=null;examOpenChapter=null;}if(k!=='yearwork'){ywOpenStudent=null;ywFinalExamOpen=false;}renderStudentSection();}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ✂️ CHANGED #5 — REMOVE هذه الكتلة بالكامل:                              */
+/*                                                                       */
+/*   var classAssistantCss=document.createElement('style');...           */
+/*   ...classAssistantCss...document.head.appendChild(classAssistantCss);*/
+/*   window.addEventListener('message',function(e){...مستمع postMessage...}); */
+/*                                                                       */
+/* واستبدلها بالكود الأصلي الجديد التالي (الـ class-home كاملًا):         */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+/* ✂️ CHANGED #5 — بديل كامل عن classAssistantCss + message listener */
+/* الشاشة الرئيسية للفصل داخل المنصة — بدون iframe وبدون postMessage */
+var CLASS_ICONS=[
+  {icon:'📋',lbl:'الحضور والغياب',action:"attViewMode='onsite';switchStuTab('attendance')"},
+  {icon:'✋',lbl:'المشاركة',action:"switchStuTab('participation')"},
+  {icon:'📝',lbl:'الواجبات',action:"switchStuTab('homework')"},
+  {icon:'📊',lbl:'الاختبارات',action:"switchStuTab('exams')"},
+  {icon:'🔬',lbl:'البحوث',action:"switchStuTab('research')"},
+  {icon:'📄',lbl:'أوراق العمل',action:"switchStuTab('worksheets')"},
+  {icon:'🎭',lbl:'النشاط',action:"switchStuTab('activity')"},
+  {icon:'⭐',lbl:'النقاط',action:"switchStuTab('gami')"},
+  {icon:'🏆',lbl:'أعمال السنة',action:"switchStuTab('yearwork')"},
+  {icon:'👤',lbl:'إدارة الطلاب',action:"switchStuTab('roster')"},
+  {icon:'👥',lbl:'المجموعات',action:"attViewMode='groups';switchStuTab('attendance')"},
+  {icon:'💬',lbl:'الرسائل',action:"navigate('messages')"},
+  {icon:'🖨️',lbl:'طباعة',action:"window.print()"}
+];
+
+function getStudentAttendancePct(stid){
+  var att=state.attendance&&state.attendance[stuOpenClass];
+  if(!att)return 100;
+  var sessions=Object.keys(att).filter(function(sid){return sid.indexOf('_')!==0;});
+  if(!sessions.length)return 100;
+  var present=0,total=0;
+  sessions.forEach(function(sid){var rec=att[sid]&&att[sid][stid];if(!rec)return;total++;if(rec.status==='present'||rec.autoRemote)present++;else if(rec.status==='late')present+=0.5;});
+  return total>0?Math.round((present/total)*100):100;
+}
+
+function getClassBehaviorSummary(){
+  var beh=state.behavior&&state.behavior[stuOpenClass];
+  if(!beh)return{pos:0,neg:0};
+  var pos=0,neg=0;
+  Object.keys(beh).forEach(function(sid){
+    Object.keys(beh[sid]||{}).forEach(function(stid){
+      (beh[sid][stid]||[]).forEach(function(x){if(x.delta>0)pos++;else if(x.delta<0)neg++;});
+    });
+  });
+  return{pos:pos,neg:neg};
+}
+
+function renderClassHome(parts){
+  var sec=parts.section;
+  var students=getStuStudents();
+  var totalStudents=students.length;
+  var avgYw=0;
+  if(totalStudents){var s=0;students.forEach(function(st){s+=(calcStudentYearWork(st.id).percent||0);});avgYw=Math.round(s/totalStudents);}
+  var avgAtt=0;
+  if(totalStudents){var sa=0;students.forEach(function(st){sa+=getStudentAttendancePct(st.id);});avgAtt=Math.round(sa/totalStudents);}
+  var beh=getClassBehaviorSummary();
+  var behTotal=beh.pos+beh.neg;
+  var behPct=behTotal>0?Math.round((beh.pos/behTotal)*100):null;
+  var h='<div class="class-home">';
+  h+='<div class="class-header"><button class="class-header-back" onclick="closeStudentSection()">← العودة للفصول</button><div class="class-header-title"><h2>شعبة '+esc(sec)+'</h2><p>'+esc(CHEM_BOOKS.g12_s1.name)+' · '+totalStudents+' طالب</p></div></div>';
+  h+='<div class="class-stats-card">';
+  h+='<div class="class-stat"><div class="class-stat-lbl">الطلاب</div><div class="class-stat-val" style="color:#0f172a">'+totalStudents+'</div></div>';
+  h+='<div class="class-stat"><div class="class-stat-lbl">المستوى<br>العام</div><div class="class-stat-val" style="color:#2563eb">'+avgYw+'%</div></div>';
+  h+='<div class="class-stat"><div class="class-stat-lbl">الحضور<br>والغياب</div><div class="class-stat-val" style="color:#16a34a">'+avgAtt+'%</div></div>';
+  h+='<div class="class-stat"><div class="class-stat-lbl">السلوك</div><div class="class-stat-val" style="color:#dc2626">'+(behPct===null?'—':behPct+'%')+'</div></div>';
+  h+='</div>';
+  h+='<div class="class-icon-grid">';
+  CLASS_ICONS.forEach(function(icon){
+    h+='<button class="class-icon-tile" onclick="'+icon.action+'"><div class="class-icon-circle">'+icon.icon+'</div><div class="class-icon-label">'+esc(icon.lbl)+'</div></button>';
+  });
+  h+='</div></div>';
+  return h;
+}
+
+function renderClassTab(parts,tab){
+  var tabInfo=STU_TABS.filter(function(t){return t.k===tab;})[0];
+  var h='<div class="class-home">';
+  h+='<div class="class-tab-header"><button class="class-tab-back" onclick="switchStuTab(\'home\')">← العودة</button>';
+  if(tabInfo)h+='<h3><span style="font-size:20px;margin-inline-start:6px">'+tabInfo.icon+'</span>'+esc(tabInfo.lbl)+'</h3>';
+  else h+='<h3>'+esc(tab)+'</h3>';
+  h+='</div>';
+  var content='';
+  switch(tab){
+    case 'roster': content=(window.renderRosterTab?window.renderRosterTab():'<div class="card"><div class="empty"><h4>لا يوجد</h4></div></div>'); break;
+    case 'attendance': content=renderAttendanceTab(); break;
+    case 'participation': content=renderSimpleGradeTab('participation','✋','المشاركة الصفية','10'); break;
+    case 'homework': content=renderHomeworkTab(); break;
+    case 'exams': content=renderExamsTab(); break;
+    case 'research': content=renderSimpleGradeTab('research','🔬','البحوث','10'); break;
+    case 'worksheets': content=renderSimpleGradeTab('worksheets','📄','أوراق العمل','10'); break;
+    case 'activity': content=renderActivityTab(); break;
+    case 'gami': content=renderGamificationTab(); break;
+    case 'yearwork': content=renderYearWorkTab(); break;
+    default: content='<div class="card"><div class="empty"><h4>لا يوجد محتوى</h4></div></div>';
+  }
+  h+=content+'</div>';
+  return h;
+}
+
+/* CSS للشاشة الرئيسية للفصل — يُضاف بعد تنسيقات المنصة الحالية */
+(function(){
+  var css=document.createElement('style');
+  css.textContent=
+  '.class-home{max-width:1000px;margin:0 auto;padding:4px}'+
+  '.class-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}'+
+  '.class-header-back{padding:8px 14px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;color:#334155}'+
+  '.class-header-back:hover{background:#f8fafc}'+
+  '.class-header-title{flex:1;min-width:160px}'+
+  '.class-header-title h2{font-size:20px;font-weight:800;color:#0f172a;margin:0}'+
+  '.class-header-title p{font-size:12.5px;color:#64748b;font-weight:700;margin:2px 0 0 0}'+
+  '.class-stats-card{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:16px 12px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.03)}'+
+  '.class-stat{text-align:center;border-inline-start:1px solid #e2e8f0;padding:4px 2px}'+
+  '.class-stat:first-child{border-inline-start:none}'+
+  '.class-stat-lbl{font-size:11.5px;color:#64748b;font-weight:700;margin-bottom:6px;line-height:1.35}'+
+  '.class-stat-val{font-size:22px;font-weight:900;font-family:monospace;line-height:1}'+
+  '.class-icon-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px 10px;padding:8px 4px}'+
+  '.class-icon-tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 4px;border-radius:14px;border:none;background:transparent;cursor:pointer;transition:.15s;font-family:inherit;min-width:0;overflow:hidden;width:100%}'+
+  '.class-icon-tile:hover{background:#f1f5f9}'+
+  '.class-icon-tile:active{transform:scale(.95)}'+
+  '.class-icon-circle{width:56px;height:56px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:26px;border:1px solid #e2e8f0;flex-shrink:0}'+
+  '.class-icon-label{font-size:11.5px;color:#334155;font-weight:700;text-align:center;line-height:1.3;word-break:break-word;overflow-wrap:anywhere;max-width:100%;padding:0 2px}'+
+  '.class-tab-header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:14px;flex-wrap:wrap}'+
+  '.class-tab-header h3{font-size:16px;font-weight:800;margin:0;color:#0f172a;display:flex;align-items:center}'+
+  '.class-tab-back{padding:7px 12px;border-radius:9px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;font-family:inherit;font-weight:700;font-size:12.5px;color:#334155}'+
+  '.class-tab-back:hover{background:#f8fafc}'+
+  '@media(max-width:600px){.class-icon-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.class-stats-card{grid-template-columns:repeat(2,1fr)}.class-stat:nth-child(3){border-inline-start:none}}'+
+  '@media(max-width:380px){.class-icon-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 6px}.class-icon-circle{width:46px;height:46px;font-size:21px}.class-icon-label{font-size:10px}}';
+  document.head.appendChild(css);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ⧉ UNCHANGED: getTodaySessionsForClass()                                */
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* [ ... نفس كود ملفك الأصلي ... ] */
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ✂️ CHANGED #6 — renderStudentSection                                    */
+/* استبدل الدالة كاملة بالسطر التالي:                                      */
+/* ═══════════════════════════════════════════════════════════════════════ */
+function renderStudentSection(){
+  if(!stuOpenClass){renderClasses();return;}
+  var parts=splitClassKey(stuOpenClass);
+  if(!parts){renderClasses();return;}
+  var content='';
+  if(!stuActiveTab||stuActiveTab==='home')content=renderClassHome(parts);
+  else content=renderClassTab(parts,stuActiveTab);
+  el('classDetail').innerHTML=content;
+  el('classesView').style.display='none';
+  el('classDetail').style.display='block';
+  window.scrollTo(0,0);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ⧉ UNCHANGED: بقية الـ script الرئيسي                                    */
+/* من بعد renderStudentSection حتى نهاية الـ script (كل الـ renderers:    */
+/* renderAttendanceTab, renderHomeworkTab, renderExamsTab,                */
+/* renderGroupsTab, renderGamificationTab, renderActivityTab,             */
+/* renderYearWorkTab, renderSimpleGradeTab, renderRosterTab, إلخ)         */
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* [ ... نفس كود ملفك الأصلي بالكامل دون أي تعديل ... ] */
+
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- ⧉ UNCHANGED: جميع الـ scripts الإضافية (v2, v3.x, OneDrive, Exams,    -->
+<!-- Messages, Reports, Portfolio, Accounts, Lab, Health, Curriculum, etc.) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- [ ... كلها كما هي في ملفك الأصلي دون أي تعديل ... ] -->
+
+</body>
+</html>
